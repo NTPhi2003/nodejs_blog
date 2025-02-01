@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
+const methodOverride = require('method-override');
 const { create } = require('express-handlebars');
 const exp = require('constants');
 
@@ -20,6 +21,9 @@ app.use(
         extended: true,
     })
 );
+
+app.use(methodOverride('_method'));
+
 app.use(express.json());
 
 // HTTP logger

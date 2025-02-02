@@ -12,6 +12,7 @@ class CourseController {
     }
 
     showUpdate(req, res, next) {
+        console.log('Show update');
         Course.find({})
             .lean()
             .then((courses) => {
@@ -26,7 +27,7 @@ class CourseController {
     // [PUT] /courses/:id
     update(req, res, next) {
         Course.updateOne({ _id: req.params.id }, req.body)
-            .then(() => res.redirect('/'))
+            .then(() => res.redirect('/courses/update'))
             .catch(next);
     }
 
@@ -49,14 +50,45 @@ class CourseController {
 
     // [GET] /courses/:id/edit
     edit(req, res, next) {
-        Course.findById(req.params.id) 
-        .lean()
-        .then((course) => {
-            res.render('courses/edit', { course });
-        })
-        .catch(next);
+        Course.findById(req.params.id)
+            .lean()
+            .then((course) => {
+                res.render('courses/edit', { course });
+            })
+            .catch(next);
         // res.render('courses/edit');
     }
+
+    // [DELETE] /courses/:id
+    delete(req, res, next) {
+        Course.delete({ _id: req.params.id })
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
+    // [DELETE] /courses/:id/force
+    forceDelete(req, res, next) {
+        Course.deleteOne({ _id: req.params.id })
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
+    // [GET] /courses/trash
+    trash(req, res, next) {
+        Course.findWithDeleted({deleted: true}) 
+            .lean()
+            .then((courses) => res.render('courses/trash', { courses }))
+            .catch(next);
+    }
+
+
+    // [PATCH] /courses/:id/restore
+    restore(req, res, next) {
+        Course.restore({ _id: req.params.id })
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
 }
 
 module.exports = new CourseController();
